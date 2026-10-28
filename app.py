@@ -1,12 +1,3 @@
-# EXIGENCIAS
-# -----
-# rota /health que deve retornar um status simples [X]
-# rota /users que deve retornar um array de users
-# configurações do banco usando variáveis de ambiente
-# retorne status http para erro
-# feche conexão com banco
-
-
 from sqlite3 import Connection, Cursor
 from typing import List, Literal, Dict
 

@@ -1,12 +1,3 @@
-/* 
-crie uma tabela users com pelo menos:
-
-- id: chave primária;
-- name: nome do usuário;
-- email: e-mail único.
-*/
-
-
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
