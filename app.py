@@ -1,9 +1,9 @@
-from sqlite3 import Connection, Cursor
-from typing import List, Literal, Dict
-
-from flask import Flask, Response, jsonify
 import os
-import psycopg2
+from typing import List, Literal, Dict
+from flask import Flask, Response, jsonify
+from psycopg2 import connect
+from psycopg2.extensions import connection, cursor
+from psycopg2.errors import Error
 
 app = Flask(__name__)
 
@@ -15,21 +15,25 @@ DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
 
 def initialize_db_connection(
     db_host: str, db_user: str, db_password: str, db_name: str
-) -> Connection | tuple[Response, Literal[400]]:
+) -> connection | Error:
     try:
-        return psycopg2.connect(
+        conn: connection = connect(
             host=db_host, user=db_user, password=db_password, database=db_name
         )
-    except Exception as exc:
-        return (
-            jsonify({"message": "Database connection failed!", "error": str(exc)}),
-            400,
-        )
+
+        return conn
+    except Error as err:
+        return err
 
 
 @app.route("/health", methods=["GET"])
-def home() -> tuple[Response, Literal[200]]:
-    return jsonify({"message": "API is alive!"}), 200
+def health() -> tuple[Response, Literal[200, 400]]:
+    conn = initialize_db_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)
+
+    if type(conn) == Error:
+        return jsonify({"message": "Database connection failed!", "error": conn}), 400
+
+    return jsonify({"message": "Database connection is working!"}), 200
 
 
 @app.route("/users", methods=["GET"])
@@ -39,7 +43,7 @@ def get_users() -> tuple[Response, Literal[200]]:
     try:
         users_list: List[Dict[int, str, str]] = []
 
-        cursor: Cursor = conn.cursor()
+        cursor: cursor = conn.cursor()
 
         cursor.execute("SELECT * FROM users")
 
