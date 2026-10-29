@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:5000"
     depends_on:
-      - ${DATABASE_HOST}
+      - database
 
   database:
     container_name: backend-database
