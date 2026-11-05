@@ -10,7 +10,8 @@ services:
     ports:
       - "8080:5000"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   database:
     container_name: backend-database
@@ -19,6 +20,20 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-U",
+          "${DATABASE_USER}",
+          "-d",
+          "${DATABASE_NAME}",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     volumes:
       - backend-database:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
