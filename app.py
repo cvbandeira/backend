@@ -29,15 +29,14 @@ def health() -> tuple[Response, Literal[200, 400]]:
 
         return jsonify({"message": "Database connection is healthy!"}), 200
 
-    except OperationalError as operr:
-        return jsonify({"message": "Database is unavailable!", "error": operr}), 503
+    except OperationalError:
+        return jsonify({"message": "Database is unavailable!"}), 503
 
 
 @app.route("/users", methods=["GET"])
 def get_users() -> tuple[Response, Literal[200]]:
-    conn = initialize_db_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)
-
     try:
+        conn = initialize_db_connection(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)
         users_list: List[Dict[int, str, str]] = []
 
         cursor: cursor = conn.cursor()
@@ -51,15 +50,14 @@ def get_users() -> tuple[Response, Literal[200]]:
             return jsonify({"message": "No users found!"}), 404
 
         cursor.close()
+        conn.close()
 
         return (
             jsonify({"message": "Users retrieved successfully!", "users": users_list}),
             200,
         )
-    except OperationalError as operr:
-        return jsonify({"message": "Database is unavailable!", "error": operr}), 503
-    finally:
-        conn.close()
+    except OperationalError:
+        return jsonify({"message": "Database is unavailable!"}), 503
 
 
 if __name__ == "__main__":
