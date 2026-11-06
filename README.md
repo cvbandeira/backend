@@ -105,7 +105,7 @@ When the connection works, the response is `200 OK`:
 }
 ```
 
-If the connection fails, the route returns `400 Bad Request`.
+If the connection fails, the route returns `503 Service Unavailable`.
 
 ### `GET /users`
 
