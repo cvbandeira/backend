@@ -1,75 +1,15 @@
-# Git
 .git
-**/.git
 .gitignore
-.gitattributes
-.gitmodules
-.gitkeep
 
-# Docker
-.docker
-.dockerignore
-Dockerfile
-Dockerfile.*
-**/Dockerfile
-**/Dockerfile.*
-docker-compose.yml
-docker-compose.*.yml
-docker-compose.*.yaml
-compose.yml
-compose.yaml
-compose.*.yml
-compose.*.yaml
-
-# Python
-*.py
-*.pyi
-*.pyc
-*.pyo
-*.pyd
-*.py[cod]
-*$py.class
-.Python
-__pycache__/
-**/__pycache__/
-.pytest_cache/
-**/.pytest_cache/
-.mypy_cache/
-**/.mypy_cache/
-.ruff_cache/
-**/.ruff_cache/
-.pytype/
-**/.pytype/
-.coverage
-.coverage.*
-htmlcov/
-**/htmlcov/
-build/
-dist/
-*.egg-info/
-**/*.egg-info/
-pyproject.toml
-setup.py
-setup.cfg
-requirements*.txt
-Pipfile
-Pipfile.lock
-
-# Virtual environments
-.venv/
-**/.venv/
-venv/
-**/venv/
-env/
-**/env/
-ENV/
-**/ENV/
-
-# Environment files
 .env
 .env.*
-**/.env
-**/.env.*
+!.env.example
 
-# IDE
-.vscode/
+.venv
+venv
+__pycache__
+*.pyc
+
+.vscode
+.idea
+.pytest_cache
