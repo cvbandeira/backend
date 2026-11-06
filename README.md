@@ -1,28 +1,23 @@
-# Backend
+# How to run
 
-API REST em Flask com PostgreSQL. O serviço expõe uma verificação de conexão
-com o banco e uma rota para consultar usuários.
+There are two ways to run the project. **Choose one:**
 
-## Formas de executar
+1. **Via Docker Compose**: starts the API and PostgreSQL in containers. This is
+   the simplest way to run the full project.
+2. **Locally**: starts the API directly on your machine. In this case, you need
+   a PostgreSQL instance running and configured separately.
 
-Há duas formas de rodar o projeto. **Escolha uma delas:**
+The instructions for each option are below. In both cases, the API exposes the
+same endpoints; only the address changes: `http://localhost:8080` via Docker
+Compose or `http://localhost:5000` locally.
 
-1. **Via Docker Compose**: inicia a API e o PostgreSQL em contêineres. É a opção
-   mais simples para executar o projeto completo.
-2. **Localmente**: inicia a API diretamente na sua máquina. Nesse caso, você
-   precisa ter um PostgreSQL em execução e configurado separadamente.
+## Requirements
 
-As instruções de cada opção estão nas seções abaixo. Em ambas, a API oferece os
-mesmos endpoints; muda apenas o endereço: `http://localhost:8080` via Docker
-Compose ou `http://localhost:5000` localmente.
+- Docker with Docker Compose; or Python 3.10+ and PostgreSQL to run without Docker.
 
-## Requisitos
+## Environment variables
 
-- Docker com Docker Compose; ou Python 3.10+ e PostgreSQL para executar sem Docker.
-
-## Configuração das variáveis
-
-Crie um arquivo `.env` na raiz do projeto:
+Create a `.env` file at the project root:
 
 ```env
 DATABASE_HOST=database
@@ -31,107 +26,117 @@ DATABASE_USER=postgres
 DATABASE_PASSWORD=postgres
 ```
 
-As variáveis são usadas pela aplicação para conectar ao banco. No Docker Compose,
-`DATABASE_HOST` deve ser `database`, o nome do serviço PostgreSQL. Para execução
-local da API, configure `DATABASE_HOST` com o endereço do PostgreSQL acessível
-pela sua máquina (por exemplo, `localhost`).
+These variables are used by the application to connect to the database. In Docker
+Compose, `DATABASE_HOST` must be `database`, the PostgreSQL service name. For
+local API execution, set `DATABASE_HOST` to the address of the PostgreSQL
+instance accessible from your machine (for example, `localhost`).
 
-| Variável            | Descrição                   |
-| ------------------- | --------------------------- |
-| `DATABASE_HOST`     | Host do servidor PostgreSQL |
-| `DATABASE_NAME`     | Nome do banco de dados      |
-| `DATABASE_USER`     | Usuário do banco            |
-| `DATABASE_PASSWORD` | Senha do usuário do banco   |
+| Variable            | Description            |
+| ------------------- | ---------------------- |
+| `DATABASE_HOST`     | PostgreSQL server host |
+| `DATABASE_NAME`     | Database name          |
+| `DATABASE_USER`     | Database user          |
+| `DATABASE_PASSWORD` | Database user password |
 
-O arquivo `.env` contém credenciais e não deve ser compartilhado ou enviado ao
-controle de versão.
+The `.env` file contains credentials and should not be shared or committed to
+version control.
 
-## Executar com Docker Compose
+## Run with Docker Compose
 
-Na raiz do projeto, com o `.env` configurado, execute:
+At the project root, with the `.env` configured, run:
 
 ```bash
 docker compose up --build
 ```
 
-A API ficará disponível em `http://localhost:8080`. O PostgreSQL é iniciado
-junto com a API, e o arquivo `init.sql` cria a tabela `users` e insere alguns
-registros de exemplo na primeira inicialização do volume do banco.
+The API will be available at `http://localhost:8080`. PostgreSQL is started
+alongside the API, and the `init.sql` file creates the `users` table and inserts
+sample records on the first initialization of the database volume.
 
-Para encerrar os serviços, pressione `Ctrl+C` e execute:
+To stop the services, press `Ctrl+C` and run:
 
 ```bash
 docker compose down
 ```
 
-## Executar localmente
+## Run locally
 
-Com um PostgreSQL em execução e as variáveis de ambiente configuradas para esse
-banco:
+With PostgreSQL running and the environment variables configured for that
+database:
 
-Crie e ative o ambiente virtual Python:
+Create and activate the Python virtual environment:
 
 ```bash
-python -m venv .venv       # Cria um ambiente virtual no diretório .venv
-source .venv/bin/activate  # Ativa o ambiente virtual (Linux/macOS)
+python -m venv .venv       # Creates a virtual environment in the .venv directory
+source .venv/bin/activate  # Activates the virtual environment (Linux/macOS)
 ```
 
-No Windows PowerShell, use este comando para ativar o ambiente virtual:
+On Windows PowerShell, use this command to activate the virtual environment:
 
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-Instale as dependências e inicie a API:
+Install the dependencies and start the API:
 
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
 
-Ao executar localmente, a API escuta na porta `5000`. Configure o banco com a
-mesma estrutura definida em `init.sql` antes de consultar `/users`.
+When running locally, the API listens on port `5000`. Configure the database with
+the same structure defined in `init.sql` before querying `/users`.
 
 ## Endpoints
 
 ### `GET /health`
 
-Verifica a conexão com o PostgreSQL.
+Checks the connection to PostgreSQL.
 
 ```bash
 curl -i http://localhost:8080/health
 ```
 
-Quando a conexão funciona, a resposta é `200 OK`:
+When the connection works, the response is `200 OK`:
 
 ```json
-{ "message": "Database connection is working!" }
+{
+	"message": "Database connection is working!"
+}
 ```
 
-Se a conexão falhar, a rota retorna `400 Bad Request`.
+If the connection fails, the route returns `400 Bad Request`.
 
 ### `GET /users`
 
-Retorna os usuários cadastrados na tabela `users`.
+Returns the users registered in the `users` table.
 
 ```bash
 curl -i http://localhost:8080/users
 ```
 
-Com registros disponíveis, a resposta é `200 OK`, por exemplo:
+With records available, the response is `200 OK`, for example:
 
 ```json
 {
 	"message": "Users retrieved successfully!",
-	"users": [{ "id": 1, "name": "JOSÉ", "email": "jose@gmail.com" }]
+	"users": [
+		{
+			"id": 1,
+			"name": "JOSÉ",
+			"email": "jose@gmail.com"
+		}
+	]
 }
 ```
 
-Se a tabela não tiver usuários, a resposta é `404 Not Found`:
+If the table has no users, the response is `404 Not Found`:
 
 ```json
-{ "message": "No users found!" }
+{
+	"message": "No users found!"
+}
 ```
 
-Se estiver executando a API localmente, substitua `8080` por `5000` nos
-comandos `curl`.
+If you are running the API locally, replace `8080` with `5000` in the `curl`
+commands.
